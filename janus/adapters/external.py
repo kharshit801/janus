@@ -519,15 +519,58 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--nrows", type=int, default=None,
                         help="Limit rows read from the source dataset (for a quick run)")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
+    parser.add_argument("--demo", action="store_true",
+                        help="Run a built-in demo validation (no dataset download needed)")
     return parser
+
+
+def _generate_demo_fixture(seed: int = 42, n: int = 3000):
+    """Generate a synthetic IEEE-CIS-shaped fixture for demo purposes."""
+    import numpy as np
+    rng = np.random.default_rng(seed)
+    n_fraud = int(n * 0.035)
+    n_benign = n - n_fraud
+    labels = [0] * n_benign + [1] * n_fraud
+    rng.shuffle(labels)
+
+    rows = []
+    for i, fraud in enumerate(labels):
+        rows.append({
+            "TransactionID": 3000000 + i,
+            "isFraud": fraud,
+            "TransactionDT": int(rng.integers(86400, 86400 * 180)),
+            "TransactionAmt": float(rng.lognormal(8, 2)) if fraud else float(rng.lognormal(6, 1.5)),
+            "ProductCD": rng.choice(["W", "C", "H", "S", "R"]),
+            "card1": int(rng.integers(1000, 20000)),
+            "DeviceType": rng.choice(["mobile", "desktop"]),
+            "DeviceInfo": rng.choice(["Windows", "iOS", "MacOS", "Android", "Linux", None]),
+            "P_emaildomain": rng.choice(["gmail.com", "yahoo.com", "hotmail.com", "protonmail.com", None]),
+            "R_emaildomain": rng.choice(["gmail.com", None, None, None]),
+        })
+    import pandas as pd
+    return pd.DataFrame(rows)
 
 
 def main(argv: Optional[list] = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
+    if args.demo:
+        print("\n" + "=" * 70)
+        print(" Janus DEMO validation (built-in synthetic fixture, no download needed)")
+        print("=" * 70)
+        df = _generate_demo_fixture(seed=args.seed, n=3000)
+        # Write to temp, adapt, run
+        import tempfile, os
+        tmp = os.path.join(tempfile.gettempdir(), "janus_demo_ieee.csv")
+        df.to_csv(tmp, index=False)
+        sessions, transactions = adapt_ieee_cis(tmp, nrows=3000, seed=args.seed)
+        result = run_pipeline_on(sessions, transactions, seed=args.seed)
+        _print_report("IEEE-CIS (demo fixture)", sessions, transactions, result)
+        os.remove(tmp)
+        return 0
+
     if not args.ieee and not args.cert:
-        # No dataset given: print download + usage guidance and exit cleanly.
         print(DOWNLOAD_HELP)
         parser.print_usage()
         return 0
