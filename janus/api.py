@@ -11,16 +11,54 @@ the Security Considerations section of the README.
 
 from __future__ import annotations
 
+import json
 import math
+import os
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.base import BaseHTTPMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi.util import get_remote_address
 
 from . import __version__, config, pipeline, pqc
+
+# ---------------------------------------------------------------------------
+# Security configuration
+# ---------------------------------------------------------------------------
+# API key required on all /api/* routes (except health). Defaults to a well-known
+# prototype key; override via the JANUS_API_KEY environment variable in any real
+# deployment.
+API_KEY = os.getenv("JANUS_API_KEY", "demo-key-finspark-2026")
+API_KEY_HEADER = "X-API-Key"
+AUDIT_LOG_PATH = config.BASE_DIR / "audit.log"
+
+# Paths that never require an API key.
+_AUTH_EXEMPT_EXACT = {"/", "/api/health"}
+_AUTH_EXEMPT_PREFIXES = ("/static",)
+
+
+def _is_api_path(path: str) -> bool:
+    return path.startswith("/api")
+
+
+def _auth_required(request: Request) -> bool:
+    """True when the request must carry a valid API key."""
+    if request.method == "OPTIONS":  # allow CORS preflight
+        return False
+    path = request.url.path
+    if path in _AUTH_EXEMPT_EXACT:
+        return False
+    if any(path.startswith(p) for p in _AUTH_EXEMPT_PREFIXES):
+        return False
+    return _is_api_path(path)
 
 
 @asynccontextmanager
@@ -43,6 +81,65 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ---------------------------------------------------------------------------
+# Rate limiting (slowapi): 60 requests / minute per client IP on /api/* routes.
+# ---------------------------------------------------------------------------
+limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
+class ApiRateLimitMiddleware(SlowAPIMiddleware):
+    """Applies the global rate limit only to /api/* routes (excluding health)."""
+
+    async def dispatch(self, request: Request, call_next):
+        path = request.url.path
+        if (
+            request.method == "OPTIONS"
+            or not _is_api_path(path)
+            or path == "/api/health"
+        ):
+            return await call_next(request)
+        return await super().dispatch(request, call_next)
+
+
+async def _api_key_middleware(request: Request, call_next):
+    """Reject /api/* requests that lack a valid X-API-Key header."""
+    if _auth_required(request) and request.headers.get(API_KEY_HEADER) != API_KEY:
+        return JSONResponse(
+            status_code=401,
+            content={"detail": "Invalid or missing API key"},
+        )
+    return await call_next(request)
+
+
+async def _audit_middleware(request: Request, call_next):
+    """Append a JSON line to audit.log for every /api request."""
+    response = await call_next(request)
+    if _is_api_path(request.url.path):
+        entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "method": request.method,
+            "path": request.url.path,
+            "ip": get_remote_address(request),
+            "api_key_used": request.headers.get(API_KEY_HEADER) == API_KEY,
+            "status_code": response.status_code,
+        }
+        try:
+            with open(AUDIT_LOG_PATH, "a", encoding="utf-8") as fh:
+                fh.write(json.dumps(entry) + "\n")
+        except OSError:
+            pass  # never let audit logging break a response
+    return response
+
+
+# Middleware execution order (outermost first): audit -> api-key -> rate-limit
+# -> CORS -> route. Added last = outermost, so audit wraps everything and always
+# records the final status code (including 401 auth and 429 rate-limit rejects).
+app.add_middleware(ApiRateLimitMiddleware)
+app.add_middleware(BaseHTTPMiddleware, dispatch=_api_key_middleware)
+app.add_middleware(BaseHTTPMiddleware, dispatch=_audit_middleware)
 
 
 def _clean(obj):

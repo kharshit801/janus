@@ -12,6 +12,7 @@ data/*.json
 !data/.gitkeep
 vault/
 *.log
+audit.log
 
 # OS / editor
 .DS_Store

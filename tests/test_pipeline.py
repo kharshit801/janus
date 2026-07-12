@@ -107,7 +107,8 @@ def test_pipeline_fused_beats_single_signal_on_f1():
 # ---------------------------------------------------------------------------
 @pytest.fixture(scope="module")
 def client():
-    return TestClient(app)
+    api_key = os.getenv("JANUS_API_KEY", "demo-key-finspark-2026")
+    return TestClient(app, headers={"X-API-Key": api_key})
 
 
 def test_api_health(client):
