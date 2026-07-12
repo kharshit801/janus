@@ -1,7 +1,7 @@
 # ⟁ Janus — Quantum-Aware Cyber-Fraud Fusion
 
 ![Python 3.13](https://img.shields.io/badge/python-3.13-blue)
-![Tests](https://img.shields.io/badge/tests-12%20passed-brightgreen)
+![Tests](https://github.com/kharshit801/janus/actions/workflows/test.yml/badge.svg)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 ![Docker](https://img.shields.io/badge/docker-ready-blue)
 
