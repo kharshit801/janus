@@ -76,6 +76,7 @@
 - The **correlation-boost** mechanism is a simple, explainable way to raise true-positive confidence *and* suppress single-signal noise — proven with a measurable FP reduction.
 - **HNDL detection is near-whitespace**: 2026 research explicitly notes current IDS/telemetry tools lack indicators for quantum-enabled attacks. We turn HNDL into an actionable per-session score.
 - Combines detection **and** protection (PQC vault) in one prototype.
+- 2026 research confirms the gap: current IDS and telemetry tools *"lack the conceptual models and operational indicators needed to identify adversaries who leverage quantum acceleration"* — [A Detection Taxonomy for Quantum-Enabled Cyber Attacks, Preprints.org, April 2026](https://www.preprints.org/manuscript/202604.1363/v1).
 
 ---
 
