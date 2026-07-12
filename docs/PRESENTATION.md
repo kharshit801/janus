@@ -1,13 +1,8 @@
-# Janus — Presentation Content (maps to the 16 Finspark template slides)
-
-Copy each block into the matching slide of `Finspark_Hackathon_Template.pptx`.
-Keep bullets tight; speak to the detail.
-
 ---
 
 ## Slide 1 — Title
 - **Project:** Janus — Cyber & Transaction Risk Fusion (Quantum-Aware)
-- **Team members:** Abhishek Rastogi, Shubit Yadav
+- **Team members:**Harshit Kumar, Abhishek Rastogi, Shubit Yadav
 - **Team bio:** _<one line per member — e.g. areas each of you led>_
 - **Date:** July 2026
 - Tagline: *"One risk verdict from two silos — watching today's threats and tomorrow's quantum risk."*
