@@ -1,0 +1,194 @@
+/* Janus — Risk Operations Console
+   Restrained enterprise / financial-institution styling.
+   Light neutral surface, navy masthead, dense data tables, formal typography.
+   No gradients, no rounded "app" chrome, no decorative colour. */
+
+:root {
+  --navy: #0b2b4a;
+  --navy-2: #12395d;
+  --ink: #1b2733;
+  --muted: #5b6b7b;
+  --line: #d3dae1;
+  --line-strong: #b9c2cc;
+  --bg: #eceff2;
+  --panel: #ffffff;
+  --panel-alt: #f5f7f9;
+  --accent: #1f4e79;
+
+  --crit: #b3261e;
+  --crit-bg: #f7e4e2;
+  --high: #a85a00;
+  --high-bg: #f6ebdc;
+  --med: #8a6d00;
+  --med-bg: #f4efda;
+  --low: #1e6b33;
+  --low-bg: #e2efe6;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+/* ---------- Masthead ---------- */
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--navy);
+  color: #fff;
+  padding: 0 24px;
+  height: 58px;
+  border-bottom: 3px solid var(--accent);
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand .logo {
+  font-weight: 700; font-size: 18px; letter-spacing: 3px;
+  border: 1px solid rgba(255,255,255,0.5);
+  padding: 4px 10px;
+}
+.brand .tagline { color: #c5d2df; font-size: 12.5px; letter-spacing: 0.2px; }
+.actions { display: flex; align-items: center; gap: 14px; }
+
+button {
+  background: #fff;
+  color: var(--navy);
+  border: 1px solid var(--line-strong);
+  padding: 8px 14px;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-family: inherit;
+}
+button:hover { background: var(--panel-alt); }
+.pill {
+  font-size: 11.5px; color: #c5d2df;
+  border: 1px solid rgba(255,255,255,0.35); padding: 4px 10px; border-radius: 2px;
+}
+
+/* ---------- KPI strip ---------- */
+.kpis {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 0;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.kpi {
+  padding: 14px 18px;
+  border-right: 1px solid var(--line);
+}
+.kpi:last-child { border-right: none; }
+.kpi .val { font-size: 24px; font-weight: 700; color: var(--navy); font-variant-numeric: tabular-nums; }
+.kpi .lbl {
+  color: var(--muted); font-size: 11px; margin-top: 3px;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.kpi .val.good { color: var(--low); }
+.kpi .val.accent { color: var(--accent); }
+.kpi .val.quantum { color: var(--navy-2); }
+
+/* ---------- Layout ---------- */
+.grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+  padding: 16px 24px 32px;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+.card.span2 { grid-column: span 2; }
+.card h3 {
+  margin: 0;
+  padding: 11px 16px;
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--navy);
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-alt);
+}
+.card h3 .sub {
+  color: var(--muted); font-weight: 400; font-size: 11.5px; margin-left: 8px;
+  text-transform: none; letter-spacing: 0;
+}
+.card > canvas,
+.card > .note,
+.card > .filters,
+.card > .table-wrap,
+.card > #caseDetail { margin: 14px 16px; }
+.note { color: var(--muted); font-size: 12px; }
+
+/* ---------- Filters ---------- */
+.filters { display: flex; gap: 20px; align-items: center; font-size: 12.5px; color: var(--muted); }
+.filters input[type=range] { vertical-align: middle; accent-color: var(--accent); }
+select {
+  background: #fff; color: var(--ink);
+  border: 1px solid var(--line-strong); border-radius: 2px; padding: 5px 8px;
+  font-family: inherit; font-size: 12.5px;
+}
+
+/* ---------- Tables ---------- */
+.table-wrap { max-height: 380px; overflow: auto; border: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+th {
+  position: sticky; top: 0; background: var(--navy); color: #fff;
+  font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+tbody tr:nth-child(even) { background: var(--panel-alt); }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: #e7eef5; }
+.score { font-variant-numeric: tabular-nums; font-family: "Consolas", "Menlo", monospace; }
+td:first-child { font-family: "Consolas", "Menlo", monospace; color: var(--accent); }
+
+/* ---------- Risk bands ---------- */
+.band {
+  display: inline-block; padding: 2px 8px; border-radius: 2px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.4px;
+  border: 1px solid transparent;
+}
+.band.CRITICAL { background: var(--crit-bg); color: var(--crit); border-color: #e2b6b1; }
+.band.HIGH { background: var(--high-bg); color: var(--high); border-color: #e2cba6; }
+.band.MEDIUM { background: var(--med-bg); color: var(--med); border-color: #ddd3a2; }
+.band.LOW { background: var(--low-bg); color: var(--low); border-color: #b6d6c0; }
+.corr { color: var(--accent); font-weight: 700; text-align: center; }
+
+/* ---------- Case narrative ---------- */
+.case-empty { color: var(--muted); font-style: italic; }
+.case h4 { margin: 0 0 10px; font-size: 14px; color: var(--navy); }
+.case .narrative {
+  background: var(--panel-alt); border-left: 3px solid var(--accent);
+  padding: 12px 14px; line-height: 1.55; font-size: 13px; color: var(--ink);
+}
+.reasons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 14px; border: 1px solid var(--line); }
+.reasons .col { padding: 12px 14px; border-right: 1px solid var(--line); }
+.reasons .col:last-child { border-right: none; }
+.reasons .col h5 {
+  margin: 0 0 8px; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.6px; color: var(--navy); border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
+}
+.reasons ul { margin: 0; padding-left: 16px; font-size: 12px; color: var(--ink); }
+.reasons li { margin-bottom: 5px; }
+.evidence {
+  display: flex; gap: 22px; margin-top: 14px; font-size: 12px; color: var(--muted);
+  flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 12px;
+}
+.evidence b { color: var(--ink); font-weight: 600; }
+
+/* ---------- Footer ---------- */
+footer {
+  text-align: center; color: var(--muted); font-size: 11.5px;
+  padding: 16px; border-top: 1px solid var(--line); background: var(--panel);
+}
+
+@media (max-width: 1000px) {
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .grid { grid-template-columns: 1fr; }
+  .card.span2 { grid-column: span 1; }
+  .reasons { grid-template-columns: 1fr; }
+}

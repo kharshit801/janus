@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Janus — Quantum-Aware Cyber-Fraud Fusion</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">JANUS</span>
+      <span class="tagline">Cyber &amp; Transaction Risk Fusion Console &nbsp;|&nbsp; Enterprise Fraud &amp; Security Operations</span>
+    </div>
+    <div class="actions">
+      <button id="protectBtn">Seal Top Case (PQC)</button>
+      <span id="pqcStatus" class="pill"></span>
+    </div>
+  </header>
+
+  <section class="kpis" id="kpis"></section>
+
+  <main class="grid">
+    <div class="card span2">
+      <h3>Fused alerts <span class="sub">telemetry × transactions × quantum</span></h3>
+      <div class="filters">
+        <label>Min fused risk
+          <input type="range" id="minScore" min="0" max="100" value="60" />
+          <span id="minScoreVal">60</span>
+        </label>
+        <select id="bandFilter">
+          <option value="">All bands</option>
+          <option value="CRITICAL">CRITICAL</option>
+          <option value="HIGH">HIGH</option>
+          <option value="MEDIUM">MEDIUM</option>
+          <option value="LOW">LOW</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table id="alertsTable">
+          <thead>
+            <tr>
+              <th>Session</th><th>User</th><th>Threat</th>
+              <th>Cyber</th><th>Fraud</th><th>Quantum</th>
+              <th>Fused</th><th>Band</th><th>Corr.</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Detection quality <span class="sub">single-signal vs fused</span></h3>
+      <canvas id="metricsChart" height="180"></canvas>
+      <p class="note" id="fpNote"></p>
+    </div>
+
+    <div class="card">
+      <h3>Actioned threats by type</h3>
+      <canvas id="threatChart" height="180"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>Quantum / HNDL posture</h3>
+      <canvas id="quantumChart" height="180"></canvas>
+      <p class="note" id="quantumNote"></p>
+    </div>
+
+    <div class="card span2" id="caseCard">
+      <h3>Case narrative <span class="sub">click an alert to investigate</span></h3>
+      <div id="caseDetail" class="case-empty">Select a session from the table above.</div>
+    </div>
+  </main>
+
+  <footer>
+    Janus Risk Operations Console &middot; Prototype build &middot; Demonstration data set &middot; Access restricted to authorised personnel
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
