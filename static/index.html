@@ -3,81 +3,144 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Janus — Quantum-Aware Cyber-Fraud Fusion</title>
+  <title>Janus — Fusion Risk Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <span class="logo">JANUS</span>
-      <span class="tagline">Cyber &amp; Transaction Risk Fusion Console &nbsp;|&nbsp; Enterprise Fraud &amp; Security Operations</span>
-    </div>
-    <div class="actions">
-      <button id="protectBtn">Seal Top Case (PQC)</button>
-      <span id="pqcStatus" class="pill"></span>
-    </div>
-  </header>
+<div class="shell">
 
-  <section class="kpis" id="kpis"></section>
+  <!-- ==================== LEFT RAIL ==================== -->
+  <aside class="rail">
+    <div class="mark" title="Janus">
+      <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true">
+        <circle cx="16" cy="16" r="13" fill="none" stroke="var(--seam)" stroke-width="1.4"/>
+        <path d="M16 3 A13 13 0 0 0 16 29 Z" fill="var(--cyber)" opacity="0.92"/>
+        <path d="M16 3 A13 13 0 0 1 16 29 Z" fill="var(--txn)" opacity="0.92"/>
+        <line x1="16" y1="3" x2="16" y2="29" stroke="var(--ink-900)" stroke-width="1.6"/>
+        <circle cx="16" cy="16" r="3.1" fill="var(--ink-900)"/>
+        <circle cx="16" cy="16" r="1.5" fill="var(--fused)"/>
+      </svg>
+    </div>
+    <nav class="nav">
+      <a class="nav-item active" data-target="overview"><span class="ni">Fusion</span></a>
+      <a class="nav-item" data-target="triage"><span class="ni">Triage</span></a>
+      <a class="nav-item" data-target="analytics"><span class="ni">Signal</span></a>
+      <a class="nav-item" data-target="quantum"><span class="ni">Quantum</span></a>
+    </nav>
+    <div class="rail-foot">
+      <span class="dot live"></span>
+      <span id="railStatus">live</span>
+    </div>
+  </aside>
 
-  <main class="grid">
-    <div class="card span2">
-      <h3>Fused alerts <span class="sub">telemetry × transactions × quantum</span></h3>
-      <div class="filters">
-        <label>Min fused risk
-          <input type="range" id="minScore" min="0" max="100" value="60" />
-          <span id="minScoreVal">60</span>
-        </label>
-        <select id="bandFilter">
-          <option value="">All bands</option>
-          <option value="CRITICAL">CRITICAL</option>
-          <option value="HIGH">HIGH</option>
-          <option value="MEDIUM">MEDIUM</option>
-          <option value="LOW">LOW</option>
-        </select>
+  <!-- ==================== MAIN ==================== -->
+  <div class="app">
+
+    <!-- command bar -->
+    <header class="cmdbar">
+      <div class="cb-title">
+        <span class="wordmark">JANUS</span>
+        <span class="cb-sub">Fusion Risk Console</span>
       </div>
-      <div class="table-wrap">
-        <table id="alertsTable">
-          <thead>
-            <tr>
-              <th>Session</th><th>User</th><th>Threat</th>
-              <th>Cyber</th><th>Fraud</th><th>Quantum</th>
-              <th>Fused</th><th>Band</th><th>Corr.</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <div class="cb-stats" id="cbStats"></div>
+      <div class="cb-actions">
+        <span class="env">DEMO</span>
+        <button id="protectBtn" class="btn">Seal case · PQC</button>
       </div>
+    </header>
+
+    <main class="view">
+
+      <!-- ===== OVERVIEW / FUSION PIPELINE ===== -->
+      <section id="overview" class="block">
+        <div class="block-head"><h2>Fusion pipeline</h2><span class="hint">two streams · one verdict · quantum horizon</span></div>
+        <div class="pipeline card">
+          <svg id="pipe" viewBox="0 0 1040 300" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+      </section>
+
+      <!-- ===== TRIAGE QUEUE ===== -->
+      <section id="triage" class="block">
+        <div class="block-head">
+          <h2>Triage queue</h2>
+          <div class="controls">
+            <div class="seg" id="bandSeg">
+              <button data-band="" class="active">All</button>
+              <button data-band="CRITICAL">Critical</button>
+              <button data-band="HIGH">High</button>
+              <button data-band="MEDIUM">Medium</button>
+            </div>
+            <label class="thresh">≥ <input type="range" id="minScore" min="0" max="100" value="60" /><b id="minScoreVal">60</b></label>
+          </div>
+        </div>
+        <div class="card queue-card">
+          <table id="queue">
+            <thead>
+              <tr>
+                <th>Case</th><th>Subject</th><th>Classification</th>
+                <th class="num">C</th><th class="num">F</th><th class="num">Q</th>
+                <th class="num">Fused</th><th>Band</th><th class="cc">⋈</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== SIGNAL ANALYTICS ===== -->
+      <section id="analytics" class="block">
+        <div class="block-head"><h2>Signal quality</h2><span class="hint">isolated signals vs fusion</span></div>
+        <div class="two">
+          <div class="card pad">
+            <div class="mini-head">Detection · precision / recall / F1</div>
+            <canvas id="metricsChart" height="200"></canvas>
+            <p class="foot" id="fpNote"></p>
+          </div>
+          <div class="card pad">
+            <div class="mini-head">Actioned caseload by classification</div>
+            <canvas id="threatChart" height="200"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== QUANTUM HORIZON ===== -->
+      <section id="quantum" class="block">
+        <div class="block-head"><h2>Quantum horizon</h2><span class="hint">harvest-now · decrypt-later exposure</span></div>
+        <div class="two">
+          <div class="card pad">
+            <div class="mini-head">Cryptographic posture</div>
+            <canvas id="quantumChart" height="200"></canvas>
+            <p class="foot" id="quantumNote"></p>
+          </div>
+          <div class="card pad">
+            <div class="mini-head">Highest HNDL exposure</div>
+            <div class="exposed" id="exposedList"></div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="pagefoot">Janus · demonstration dataset · access restricted to authorised personnel</footer>
+    </main>
+  </div>
+
+  <!-- ==================== INVESTIGATION SLIDE-OVER ==================== -->
+  <div class="scrim" id="scrim"></div>
+  <aside class="inspector" id="inspector">
+    <div class="insp-head">
+      <div>
+        <div class="insp-id" id="inspId">—</div>
+        <div class="insp-class" id="inspClass"></div>
+      </div>
+      <button class="x" id="inspClose">✕</button>
     </div>
+    <div class="insp-body" id="inspBody"></div>
+  </aside>
 
-    <div class="card">
-      <h3>Detection quality <span class="sub">single-signal vs fused</span></h3>
-      <canvas id="metricsChart" height="180"></canvas>
-      <p class="note" id="fpNote"></p>
-    </div>
-
-    <div class="card">
-      <h3>Actioned threats by type</h3>
-      <canvas id="threatChart" height="180"></canvas>
-    </div>
-
-    <div class="card">
-      <h3>Quantum / HNDL posture</h3>
-      <canvas id="quantumChart" height="180"></canvas>
-      <p class="note" id="quantumNote"></p>
-    </div>
-
-    <div class="card span2" id="caseCard">
-      <h3>Case narrative <span class="sub">click an alert to investigate</span></h3>
-      <div id="caseDetail" class="case-empty">Select a session from the table above.</div>
-    </div>
-  </main>
-
-  <footer>
-    Janus Risk Operations Console &middot; Prototype build &middot; Demonstration data set &middot; Access restricted to authorised personnel
-  </footer>
-
-  <script src="/static/app.js"></script>
+</div>
+<script src="/static/app.js"></script>
 </body>
 </html>
