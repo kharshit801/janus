@@ -129,6 +129,7 @@
 
 ## Slide 16 — Thank You
 - **Team members:**
+  - Harshit Kumar
   - Abhishek Rastogi — _<role, e.g. presentation & solution design>_ · _<email/phone>_
   - Shubit Yadav — _<role, e.g. engineering & analytics>_ · _<email/phone>_
 - Closing line: *"Janus — one verdict from two silos, ready for the quantum era."*
