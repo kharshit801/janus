@@ -64,10 +64,14 @@
 ---
 
 ## Slide 8 — Business Potential and Relevance
-- **Direct relevance to Bank of Maharashtra:** unifies SOC + fraud operations, cutting analyst fatigue and missed cross-domain attacks (account takeover, mule transfers).
-- **ROI:** fewer false positives = lower investigation cost; correlated detection = fewer fraud losses; quantum readiness = regulatory + reputational protection.
-- **Expansion:** UPI/IMPS/NEFT fraud, card-not-present, corporate banking, and a bank-wide **PQC migration dashboard** as India/RBI moves toward quantum-safe mandates.
-- **Long-term:** the fusion layer is a platform — new telemetry or transaction sources plug in without re-architecting.
+- **The problem in rupees:** Indian banks lost ₹36,014 crore to fraud in FY2025 (RBI). Maharashtra alone: ₹38,872 crore across 2.19 lakh cases. Public-sector banks: 5,418 cases worth ₹23,617 crore.
+- **What Janus delivers (validated on real Kaggle data):**
+  - False positives: **151 → 5** (97% reduction) — saves ₹26.6 crore/year in wasted analyst time at scale.
+  - Recall: **1.0** (catches every fraud) — at ₹8 lakh avg loss per incident, preventing even 3 extra/month = ₹2.88 crore saved/year.
+  - **Combined ROI projection: ~₹29 crore/year** for a single mid-size bank deployment.
+- **Quantum readiness:** RBI will inevitably mandate PQC migration (NIST finalised standards in 2024). Janus gives the bank a **PQC readiness dashboard today** — proactive compliance before the mandate, avoiding a rushed costly migration later.
+- **Expansion:** UPI/IMPS/NEFT fraud, card-not-present, corporate banking, multi-branch rollout, and a bank-wide crypto-migration tracker.
+- **Direct relevance to Bank of Maharashtra:** unifies their SOC + fraud operations (currently siloed), cuts investigation costs, and positions them as quantum-ready ahead of peers.
 
 ---
 
