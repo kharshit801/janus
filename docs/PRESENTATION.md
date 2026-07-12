@@ -86,9 +86,9 @@ Keep bullets tight; speak to the detail.
 ---
 
 ## Slide 10 — User Experience
-- Single **dark ops dashboard**: KPI hero row, sortable fused-alert table, one-click **case narrative** with colour-coded cyber/fraud/quantum reason codes and the raw correlated evidence.
-- Analysts read *why* in plain English, not raw scores — reduces triage time.
-- Shareable deep-links (`/?case=S100136`), live risk-threshold slider, one-click "Seal case (PQC)".
+- **Analyst operations console**, not a dashboard: a live fusion pipeline, a triage queue, and a slide-in **case investigation panel**.
+- Clicking any case shows, in 3 seconds: fused score + band, the three signal scores, one-line "why", 3-4 plain-language **key findings**, and a **recommended action** — no walls of text.
+- Purpose-built triage flow: scan queue → open case → act. Risk-threshold slider and band filters. One-click "Seal case · PQC".
 - Screenshots: `docs/screenshots/dashboard.png`, `case_narrative.png`.
 
 ---
@@ -128,7 +128,7 @@ Keep bullets tight; speak to the detail.
 
 ## Slide 15 — Solution Screenshots & Video & GitHub Link
 - **Screenshots:** `docs/screenshots/dashboard.png` (KPIs + fused alerts + detection-quality chart + threat donut), `docs/screenshots/case_narrative.png` (quantum radar + case narrative).
-- **Demo flow to record (60–90s):** open dashboard → point out precision 1.0 / FP reduction → click a CRITICAL account-takeover case → read the narrative + reason codes → show quantum posture → click "Seal Top Case (PQC)".
+- **Demo flow to record (60–90s):** open console → point out the fusion pipeline and precision 1.0 / 0 false positives → click a CRITICAL account-takeover case → read the key findings + recommended action → show quantum posture → click "Seal case · PQC".
 - **GitHub:** _<repo URL>_
 
 ---

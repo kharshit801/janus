@@ -193,15 +193,62 @@ function ring(score, color) {
       stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 31 31)"/>
   </svg>`;
 }
+const money = (n) => "₹" + Number(n).toLocaleString("en-IN", { maximumFractionDigits: 0 });
+
+// Plain-language findings synthesised from the correlated evidence (no z-scores)
+function deriveFindings(a, t, txns) {
+  const f = [];
+  if (t.impossible_travel) f.push(["c", "CYBER", `Impossible travel · login from ${t.geo_country}`]);
+  else if (t.device_known === false || t.device_risk >= 0.6) f.push(["c", "CYBER", "Unrecognised high-risk device"]);
+  if (t.mfa_used === false && a.cyber_score >= 55) f.push(["c", "CYBER", "MFA not completed"]);
+  if (t.privilege_escalation) f.push(["c", "CYBER", "Privilege escalation in session"]);
+
+  if (txns && txns.length) {
+    const mx = txns.reduce((p, c) => (c.amount > p.amount ? c : p), txns[0]);
+    if (mx.amount >= 50000 || mx.beneficiary_new)
+      f.push(["f", "TXN", `${money(mx.amount)} to ${mx.beneficiary_new ? "new " : ""}payee · ${mx.beneficiary_country}`]);
+    else if (txns.length >= 4) f.push(["f", "TXN", `${txns.length} rapid transfers in session`]);
+  }
+
+  if (a.quantum_posture === "QUANTUM_VULNERABLE" && a.quantum_score >= 55)
+    f.push(["q", "QUANTUM", `Quantum-vulnerable ${t.tls_key_exchange} on ${t.data_sensitivity} data`]);
+  else if (a.quantum_score >= 70)
+    f.push(["q", "QUANTUM", `High harvest-now-decrypt-later exposure`]);
+  return f.slice(0, 4);
+}
+
+function deriveWhy(a) {
+  if (a.cross_domain_correlated)
+    return `Two independent signals — <b>cyber</b> and <b>transaction</b> — fired in the same session. That correlation is why confidence is high.`;
+  const tt = a.threat_type;
+  if (tt.startsWith("Transaction")) return `Transaction behaviour deviates sharply from this customer's baseline.`;
+  if (tt.startsWith("Insider")) return `A privileged account is behaving outside its normal pattern.`;
+  if (tt.startsWith("Quantum")) return `Sensitive data moved over <b>quantum-vulnerable</b> cryptography.`;
+  if (tt.startsWith("Cyber")) return `Access pattern is anomalous for this user.`;
+  return `Elevated risk detected on this session.`;
+}
+
+function deriveAction(a) {
+  const tt = a.threat_type;
+  if (tt.startsWith("Account Takeover")) return "Block session · force re-authentication · freeze beneficiary";
+  if (tt.startsWith("Insider")) return "Suspend elevated access · open investigation";
+  if (tt.startsWith("Transaction")) return "Hold pending transactions · verify with customer";
+  if (tt.startsWith("Quantum")) return "Rotate to PQC · restrict bulk egress · flag for crypto migration";
+  if (tt.startsWith("Cyber")) return "Step-up authentication · monitor session";
+  return "Review case";
+}
+
 async function openCase(id, tr) {
   document.querySelectorAll("#queue tr.sel").forEach((r) => r.classList.remove("sel"));
   tr?.classList.add("sel");
   const d = await api(`/api/alerts/${id}`);
   const a = d.alert, t = d.telemetry;
-  const lane = (cls, title, arr) => arr && arr.length
-    ? `<div class="lane ${cls}"><h5>${title}</h5><ul>${arr.map((x) => `<li>${x}</li>`).join("")}</ul></div>` : "";
-  const txns = (d.transactions || []).map((x) =>
-    `<div class="t"><span>${x.txn_type} · ₹${Number(x.amount).toLocaleString("en-IN")}</span>
+
+  const findings = deriveFindings(a, t, d.transactions)
+    .map(([c, tag, text]) => `<div class="finding"><span class="tag ${c}">${tag}</span><span>${text}</span></div>`)
+    .join("");
+  const txns = (d.transactions || []).slice(0, 4).map((x) =>
+    `<div class="t"><span>${x.txn_type} · ${money(x.amount)}</span>
      <span class="dest">→ ${x.beneficiary_country}${x.beneficiary_new ? " · new" : ""}</span></div>`).join("") ||
     `<div class="t"><span class="dest">no transactions in session</span></div>`;
 
@@ -219,17 +266,16 @@ async function openCase(id, tr) {
       <div class="split f"><div class="sv">${a.fraud_score}</div><div class="sl">Transaction</div></div>
       <div class="split q"><div class="sv">${a.quantum_score}</div><div class="sl">Quantum</div></div>
     </div>
-    <div class="narr">${a.narrative}</div>
-    ${lane("c", "Cyber signals", a.cyber_reasons)}
-    ${lane("f", "Transaction signals", a.fraud_reasons)}
-    ${lane("q", "Quantum exposure", a.quantum_reasons)}
+    <div class="why">${deriveWhy(a)}</div>
+    <div class="sect">Key findings</div>
+    <div class="findings">${findings || '<div class="finding"><span>No individual signal above threshold.</span></div>'}</div>
+    <div class="action"><div class="al">Recommended action</div><div class="at">${deriveAction(a)}</div></div>
+    <div class="sect">Evidence</div>
     <div class="kv">
-      <div>Device risk <b>${t.device_risk}</b></div>
       <div>Origin <b>${t.geo_country} · ${t.geo_distance_km}km</b></div>
-      <div>Crypto <b>${t.tls_key_exchange}/${t.tls_cipher}</b></div>
-      <div>Egress <b>${(t.bytes_out / 1e6).toFixed(0)}MB</b></div>
+      <div>Device risk <b>${t.device_risk}</b></div>
+      <div>Crypto <b>${t.tls_key_exchange}</b></div>
       <div>MFA <b>${t.mfa_used ? "yes" : "no"}</b></div>
-      <div>Ground truth <b>${a.ground_truth}</b></div>
     </div>
     <div class="txns">${txns}</div>`;
   $("#scrim").classList.add("on");

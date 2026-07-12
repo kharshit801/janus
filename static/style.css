@@ -221,15 +221,18 @@ td.n.fused { color: var(--text); font-weight: 600; }
 .split .sl { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-top: 2px; }
 .split.c .sv { color: var(--cyber); } .split.f .sv { color: var(--txn); } .split.q .sv { color: var(--quantum); }
 
-.narr { background: var(--ink-850); border-left: 3px solid var(--fused); border-radius: 4px; padding: 12px 14px; font-size: 12.5px; line-height: 1.6; color: var(--text); }
-.lane { margin-top: 16px; }
-.lane h5 { margin: 0 0 8px; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); display: flex; align-items: center; gap: 7px; }
-.lane h5::before { content: ""; width: 8px; height: 8px; border-radius: 2px; }
-.lane.c h5::before { background: var(--cyber); }
-.lane.f h5::before { background: var(--txn); }
-.lane.q h5::before { background: var(--quantum); }
-.lane ul { margin: 0; padding-left: 16px; }
-.lane li { font-size: 12px; margin-bottom: 5px; color: var(--text); }
+.why { font-size: 12.5px; line-height: 1.5; color: var(--muted); background: var(--ink-850); border-left: 3px solid var(--fused); border-radius: 4px; padding: 10px 13px; }
+.why b { color: var(--text); font-weight: 600; }
+.sect { font-size: 10px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--muted); margin: 18px 0 9px; }
+.findings { display: flex; flex-direction: column; gap: 7px; }
+.finding { display: flex; align-items: center; gap: 10px; background: var(--ink-850); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 12.5px; }
+.tag { font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: 0.5px; padding: 3px 7px; border-radius: 4px; flex: 0 0 auto; }
+.tag.c { color: var(--cyber); background: rgba(47,182,207,0.13); }
+.tag.f { color: var(--txn); background: rgba(224,151,58,0.13); }
+.tag.q { color: var(--quantum); background: rgba(163,116,255,0.13); }
+.action { margin-top: 18px; border: 1px solid rgba(111,123,255,0.5); background: rgba(111,123,255,0.09); border-radius: 8px; padding: 12px 14px; }
+.action .al { font-size: 10px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--fused); margin-bottom: 5px; }
+.action .at { font-size: 13.5px; font-weight: 600; color: var(--text); }
 .kv { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px 16px; margin-top: 16px; font-size: 12px; padding-top: 14px; border-top: 1px solid var(--line); }
 .kv div { color: var(--muted); }
 .kv b { color: var(--text); font-family: var(--mono); font-weight: 500; }
