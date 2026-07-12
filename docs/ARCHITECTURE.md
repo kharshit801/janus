@@ -2,57 +2,51 @@
 
 ## 1. High-level architecture
 
-```
-                         ┌──────────────────────────────────────────────┐
-                         │                  DATA SOURCES                  │
-                         │  (synthetic in prototype; pluggable in prod)   │
-                         ├───────────────────────┬───────────────────────┤
-                         │  Cyber telemetry       │  Transactional stream  │
-                         │  • auth / login logs   │  • payments/transfers  │
-                         │  • device & geo risk   │  • beneficiary data    │
-                         │  • TLS crypto posture  │  • channel / velocity  │
-                         │  • data egress         │                        │
-                         └───────────┬───────────┴───────────┬────────────┘
-                                     │                         │
-                                     ▼                         ▼
-                         ┌──────────────────────────────────────────────┐
-                         │        FEATURE ENGINEERING  (ml_engine)        │
-                         │  session-level cyber features + aggregated     │
-                         │  per-session transaction features              │
-                         └───────────┬───────────────┬───────────────────┘
-                                     │               │
-                 ┌───────────────────┘               └──────────────────┐
-                 ▼                                                       ▼
-      ┌────────────────────┐   ┌────────────────────┐   ┌────────────────────────┐
-      │  CYBER MODEL        │   │  FRAUD MODEL        │   │  QUANTUM-RISK MONITOR   │
-      │  IsolationForest    │   │  IsolationForest    │   │  (quantum_risk.py)      │
-      │  → cyber_score      │   │  → fraud_score      │   │  → quantum_score (HNDL) │
-      └─────────┬──────────┘   └─────────┬──────────┘   └───────────┬────────────┘
-                │                          │                          │
-                └──────────────┬───────────┴──────────────┬──────────┘
-                               ▼                            
-                    ┌─────────────────────────────────────────────┐
-                    │        FUSION ENGINE  (correlation.py)        │
-                    │  fused = 0.4·cyber + 0.4·fraud + 0.2·quantum  │
-                    │  + correlation boost when cyber & fraud       │
-                    │    co-fire in the same session                │
-                    │  → risk band · threat type · reason codes     │
-                    │  → human-readable CASE NARRATIVE              │
-                    └───────────────────┬─────────────────────────┘
-                                        │
-              ┌─────────────────────────┼─────────────────────────┐
-              ▼                          ▼                          ▼
-   ┌────────────────────┐   ┌────────────────────┐   ┌────────────────────────┐
-   │  FastAPI backend    │   │  PQC ARTIFACT VAULT │   │  Evaluation / metrics   │
-   │  (api.py)           │   │  (pqc.py)           │   │  (pipeline.py)          │
-   │  REST + static UI   │   │  AES-256-GCM+SHA3   │   │  precision/recall/F1,   │
-   │                     │   │  (+ optional ML-KEM)│   │  FP-reduction proof     │
-   └─────────┬──────────┘   └────────────────────┘   └────────────────────────┘
-             ▼
-   ┌────────────────────┐
-   │  SOC / Fraud analyst│
-   │  dashboard (static) │
-   └────────────────────┘
+```mermaid
+flowchart TB
+    subgraph SRC[Data sources · synthetic in prototype, pluggable in prod]
+        CY[Cyber telemetry<br/>auth · device · geo · TLS · egress]
+        TX[Transactional stream<br/>payments · payee · velocity]
+    end
+
+    FE[Feature engineering · ml_engine<br/>session cyber features + aggregated transaction features]
+
+    subgraph PILLARS[Three analytic pillars]
+        CM[Cyber model<br/>Isolation Forest → cyber_score]
+        FM[Fraud model<br/>Isolation Forest → fraud_score]
+        QM[Quantum-risk monitor · quantum_risk.py<br/>→ quantum_score HNDL]
+    end
+
+    FUSE{{Fusion engine · correlation.py<br/>fused = 0.4·cyber + 0.4·fraud + 0.2·quantum<br/>+ correlation boost when cyber & fraud co-fire}}
+    OUT[Verdict<br/>risk band · classification · findings · recommended action]
+
+    API[FastAPI backend · api.py]
+    UI[Operations console<br/>pipeline · triage · investigation]
+    VAULT[(PQC artifact vault · pqc.py<br/>AES-256-GCM + SHA3)]
+    EVAL[Evaluation · pipeline.py<br/>precision / recall / F1 · FP-reduction proof]
+
+    CY --> FE
+    TX --> FE
+    FE --> CM
+    FE --> FM
+    CY --> QM
+    CM --> FUSE
+    FM --> FUSE
+    QM --> FUSE
+    FUSE --> OUT
+    OUT --> API
+    API --> UI
+    OUT --> VAULT
+    OUT --> EVAL
+
+    classDef cyber stroke:#2fb6cf,stroke-width:2px;
+    classDef txn stroke:#e0973a,stroke-width:2px;
+    classDef fused stroke:#6f7bff,stroke-width:2px;
+    classDef quantum stroke:#a374ff,stroke-width:2px;
+    class CY,CM cyber;
+    class TX,FM txn;
+    class FUSE,OUT,API,UI,EVAL fused;
+    class QM,VAULT quantum;
 ```
 
 ## 2. The three analytic pillars

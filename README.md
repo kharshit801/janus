@@ -18,6 +18,57 @@ Janus turns that correlation into an automatic, explainable decision, and adds a
 
 ---
 
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph SRC[Data sources]
+        CY[Cyber telemetry<br/>auth · device · geo · TLS · egress]
+        TX[Transactional behaviour<br/>amount · payee · velocity]
+    end
+
+    FE[Feature engineering<br/>per-session vectors]
+
+    subgraph PILLARS[Analytic pillars]
+        CM[Cyber model<br/>Isolation Forest]
+        FM[Fraud model<br/>Isolation Forest]
+        QM[Quantum monitor<br/>HNDL exposure]
+    end
+
+    FUSE{{Fusion engine<br/>weighted blend + correlation boost}}
+    OUT[Explainable verdict<br/>score · band · findings · action]
+
+    API[FastAPI backend]
+    UI[Operations console<br/>pipeline · triage · investigation]
+    VAULT[(PQC artifact vault<br/>AES-256-GCM + SHA3)]
+
+    CY --> FE
+    TX --> FE
+    FE --> CM
+    FE --> FM
+    CY --> QM
+    CM --> FUSE
+    FM --> FUSE
+    QM --> FUSE
+    FUSE --> OUT
+    OUT --> API
+    API --> UI
+    OUT --> VAULT
+
+    classDef cyber stroke:#2fb6cf,stroke-width:2px;
+    classDef txn stroke:#e0973a,stroke-width:2px;
+    classDef fused stroke:#6f7bff,stroke-width:2px;
+    classDef quantum stroke:#a374ff,stroke-width:2px;
+    class CY,CM cyber;
+    class TX,FM txn;
+    class FUSE,OUT,API,UI fused;
+    class QM,VAULT quantum;
+```
+
+Two siloed streams (cyber telemetry + transactions) are scored independently, fused into one verdict — with a **correlation boost** when both fire in the same session — and the quantum monitor adds harvest-now-decrypt-later exposure. Full detail in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+---
+
 ## What it does
 
 | Capability | Module |
