@@ -1,4 +1,3 @@
----
 
 ## Slide 1 — Title
 - **Project:** Janus — Cyber & Transaction Risk Fusion (Quantum-Aware)
