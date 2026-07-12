@@ -14,6 +14,7 @@ const bandColor = (b) => ({ CRITICAL: C.crit, HIGH: C.high, MEDIUM: C.med, LOW: 
 let ALERTS = [];        // full alert set
 let charts = {};
 let filterBand = "";
+let selectedIndex = -1; // keyboard-selected triage row
 
 // ---------------- boot ----------------
 (async function init() {
@@ -30,6 +31,8 @@ let filterBand = "";
   renderThreatChart();
   renderQuantum(quantum);
   wireUI();
+  // data is in — drop the skeleton class to reveal real content
+  document.body.classList.remove("loading");
   const openId = new URLSearchParams(location.search).get("open");
   if (openId) openCase(openId);
 })();
@@ -114,9 +117,58 @@ function renderQueue() {
       </tr>`;
     }).join("");
   const tb = $("#queue tbody");
-  tb.innerHTML = rows || `<tr><td colspan="9" style="padding:24px;color:var(--muted)">No cases at this threshold.</td></tr>`;
-  tb.querySelectorAll("tr[data-id]").forEach((tr) =>
-    tr.addEventListener("click", () => openCase(tr.dataset.id, tr)));
+  selectedIndex = -1; // filters changed — reset keyboard selection
+
+  if (rows) {
+    tb.innerHTML = rows;
+    tb.querySelectorAll("tr[data-id]").forEach((tr, i) =>
+      tr.addEventListener("click", () => { selectedIndex = i; openCase(tr.dataset.id, tr); }));
+  } else {
+    tb.innerHTML = `<tr class="empty-row"><td colspan="9">
+      <div class="empty-state">
+        <div class="es-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor"
+               stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+        </div>
+        <div class="es-title">No cases match your filters</div>
+        <div class="es-sub">Nothing in the triage queue meets the current band and score threshold. Try widening your criteria.</div>
+        <button class="es-reset" id="queueReset" type="button">Reset filters</button>
+      </div></td></tr>`;
+    $("#queueReset").addEventListener("click", resetFilters);
+  }
+}
+
+// reset triage filters to defaults (min_score 0, band all)
+function resetFilters() {
+  filterBand = "";
+  $("#minScore").value = 0;
+  $("#minScoreVal").textContent = "0";
+  $("#bandSeg .active")?.classList.remove("active");
+  $('#bandSeg button[data-band=""]')?.classList.add("active");
+  renderQueue();
+}
+
+// ---------------- keyboard navigation over the queue ----------------
+function queueRows() { return [...$("#queue tbody").querySelectorAll("tr[data-id]")]; }
+
+function highlightSelected() {
+  const rows = queueRows();
+  rows.forEach((r, i) => r.classList.toggle("sel", i === selectedIndex));
+  if (selectedIndex >= 0 && rows[selectedIndex])
+    rows[selectedIndex].scrollIntoView({ block: "nearest" });
+}
+
+function moveSelection(delta) {
+  const rows = queueRows();
+  if (!rows.length) return;
+  selectedIndex = selectedIndex < 0
+    ? (delta > 0 ? 0 : rows.length - 1)
+    : Math.min(rows.length - 1, Math.max(0, selectedIndex + delta));
+  highlightSelected();
 }
 
 // ---------------- charts ----------------
@@ -297,7 +349,18 @@ function wireUI() {
     }));
   $("#inspClose").addEventListener("click", closeCase);
   $("#scrim").addEventListener("click", closeCase);
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCase(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { closeCase(); return; }
+    // don't hijack typing in form controls (e.g. the score slider)
+    if (e.target.matches("input, textarea, select")) return;
+    const rows = queueRows();
+    if (e.key === "ArrowDown") { e.preventDefault(); moveSelection(1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); moveSelection(-1); }
+    else if (e.key === "Enter" && selectedIndex >= 0 && rows[selectedIndex]) {
+      e.preventDefault();
+      openCase(rows[selectedIndex].dataset.id, rows[selectedIndex]);
+    }
+  });
 
   $("#protectBtn").addEventListener("click", async () => {
     const r = await api("/api/protect-top-case", { method: "POST" });

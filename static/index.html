@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="/static/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
-<body>
+<body class="loading">
 <div class="shell">
 
   <!-- ==================== LEFT RAIL ==================== -->
@@ -46,7 +46,13 @@
         <span class="wordmark">JANUS</span>
         <span class="cb-sub">Fusion Risk Console</span>
       </div>
-      <div class="cb-stats" id="cbStats"></div>
+      <div class="cb-stats" id="cbStats">
+        <div class="stat skel"><b class="skel-line"></b><span class="skel-line sm"></span></div>
+        <div class="stat skel"><b class="skel-line"></b><span class="skel-line sm"></span></div>
+        <div class="stat skel"><b class="skel-line"></b><span class="skel-line sm"></span></div>
+        <div class="stat skel"><b class="skel-line"></b><span class="skel-line sm"></span></div>
+        <div class="stat skel"><b class="skel-line"></b><span class="skel-line sm"></span></div>
+      </div>
       <div class="cb-actions">
         <span class="env">DEMO</span>
         <button id="protectBtn" class="btn">Seal case · PQC</button>
@@ -86,7 +92,14 @@
                 <th class="num">Fused</th><th>Band</th><th class="cc">⋈</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+              <tr class="skel-row"><td colspan="9"><span class="skel-line row"></span></td></tr>
+              <tr class="skel-row"><td colspan="9"><span class="skel-line row"></span></td></tr>
+              <tr class="skel-row"><td colspan="9"><span class="skel-line row"></span></td></tr>
+              <tr class="skel-row"><td colspan="9"><span class="skel-line row"></span></td></tr>
+              <tr class="skel-row"><td colspan="9"><span class="skel-line row"></span></td></tr>
+              <tr class="skel-row"><td colspan="9"><span class="skel-line row"></span></td></tr>
+            </tbody>
           </table>
         </div>
       </section>
