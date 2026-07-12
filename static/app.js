@@ -2,7 +2,11 @@
 // Janus — Fusion Risk Console (client)
 // ============================================================
 const $ = (s) => document.querySelector(s);
-const api = (p, o) => fetch(p, o).then((r) => r.json());
+const API_KEY = "demo-key-finspark-2026";
+const api = (p, o = {}) => {
+  o.headers = { ...o.headers, "X-API-Key": API_KEY };
+  return fetch(p, o).then((r) => r.json());
+};
 
 const C = {
   cyber: "#2fb6cf", txn: "#e0973a", fused: "#6f7bff", quantum: "#a374ff",
