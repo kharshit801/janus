@@ -12,6 +12,7 @@ data/*.json
 !data/.gitkeep
 vault/
 *.log
+.env
 audit.log
 
 # OS / editor
