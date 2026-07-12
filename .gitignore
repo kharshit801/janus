@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Janus generated artifacts
+data/*.csv
+data/*.json
+!data/.gitkeep
+vault/
+*.log
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
