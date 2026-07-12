@@ -1,7 +1,7 @@
 
 ## Slide 1 — Title
 - **Project:** Janus — Cyber & Transaction Risk Fusion (Quantum-Aware)
-- **Team members:** Harshit Kumar, Abhishek Rastogi, Shubit Yadav
+- **Team members:** Harshit Kumar (Team Lead), Abhishek Rastogi, Shobhit Yadav
 - **Team bio:** _<one line per member — e.g. areas each of you led>_
 - **Date:** July 2026
 - Tagline: *"One risk verdict from two silos — watching today's threats and tomorrow's quantum risk."*
@@ -130,9 +130,9 @@
 
 ## Slide 16 — Thank You
 - **Team members:**
-  - Harshit Kumar
-  - Abhishek Rastogi — _<role, e.g. presentation & solution design>_ · _<email/phone>_
-  - Shubit Yadav — _<role, e.g. engineering & analytics>_ · _<email/phone>_
+  - Harshit Kumar — Team Lead, architecture & engineering
+  - Abhishek Rastogi — presentation & solution design
+  - Shobhit Yadav
 - Closing line: *"Janus — one verdict from two silos, ready for the quantum era."*
 
 ---
