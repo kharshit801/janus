@@ -264,11 +264,17 @@ function wireUI() {
     n.addEventListener("click", () => document.getElementById(n.dataset.target)
       .scrollIntoView({ behavior: "smooth", block: "start" })));
   const view = $(".view");
+  let ticking = false;
   view.addEventListener("scroll", () => {
-    const y = view.scrollTop + 90;
-    let cur = sections[0].id;
-    for (const s of sections) if (s.offsetTop <= y) cur = s.id;
-    document.querySelectorAll(".nav-item").forEach((n) =>
-      n.classList.toggle("active", n.dataset.target === cur));
-  });
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const y = view.scrollTop + 90;
+      let cur = sections[0].id;
+      for (const s of sections) if (s.offsetTop <= y) cur = s.id;
+      document.querySelectorAll(".nav-item").forEach((n) =>
+        n.classList.toggle("active", n.dataset.target === cur));
+      ticking = false;
+    });
+  }, { passive: true });
 }
